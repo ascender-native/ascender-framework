@@ -1,0 +1,141 @@
+class HttpRoute:
+    middlewares: list = []
+    enpoint: callable
+    path: str = ""
+    prefix: str = ""
+    methods: list
+
+    def __init__(self, path: str, endpoint, methods: list, prefix: str = "") -> None:
+        self.path = prefix + path
+        self.enpoint = endpoint
+        self.methods = methods
+
+    def middleware(self, *middlewares):
+        if isinstance(middlewares, tuple):
+            self.middlewares.extend(middlewares)
+        else:
+            for middleware in middlewares:
+                self.middlewares.append(middleware)
+        return self
+    
+class Route:
+    @staticmethod
+    def get(path: str, endpoint) -> HttpRoute:
+        route = HttpRoute(path, endpoint, methods=["GET"])
+        return route
+    
+    @staticmethod
+    def post(path: str, endpoint) -> HttpRoute:
+        route = HttpRoute(path, endpoint, methods=["POST"])
+        return route
+
+    @staticmethod
+    def put(path: str, endpoint: callable) -> HttpRoute:
+        route = HttpRoute(path, endpoint, methods=["PUT"])
+        return route
+
+    @staticmethod
+    def delete(path: str, endpoint: callable) -> HttpRoute:
+        route = HttpRoute(path, endpoint, methods=["DELETE"])
+        return route
+    
+    @staticmethod
+    def group(callback, prefix=""):
+        route = RouteList()
+        if isinstance(callback, str):
+            route.routes = Route._handle_file(callback)
+            return route
+        if isinstance(callback, list):
+            route.routes = callback
+            route.prefix = prefix
+            return route
+
+    def _handle_file(file_path):
+        context = {'route': RouteList}
+        with open(file_path, 'r') as file:
+            exec(file.read(), context)
+        route = context['route']
+        return route.routes
+    
+class RouteBuild:
+    def __init__(self):
+        self.prefix: str = ""
+        self.routes: list = []
+        self.middlewares: list = []
+
+    def _handle_file_to_route(self, file_path):
+        context = {"route": []}
+        with open(file_path, 'r') as file:
+            exec(file.read(), context)
+        route = context['route']
+        return route
+
+    def build(self, group = None):
+        http_routes = self.build_routes(self.routes, group)
+        
+        return http_routes
+    
+    def build_routes(self, routes, group = None, http_routes: list = []):
+        for route in routes:
+            self.build_prefix(route, group)
+            self.build_middleware(route, group)
+            if isinstance(route, HttpRoute):
+                route.prefix = self.prefix + route.prefix
+                http_routes.append(route)
+            elif isinstance(route, RouteList):
+                http_routes = self.build_routes(route.routes, group=route, http_routes=http_routes)
+        return http_routes
+    
+    def build_prefix(self, route, group):
+        if isinstance(group, RouteBuild):
+            route.prefix = group.prefix + route.prefix
+        return route
+    
+    def build_middleware(self, route: HttpRoute, group):
+        if isinstance(group, RouteBuild):
+            unique_middlewares = set(route.middlewares) | set(group.middlewares)
+            route.middlewares = list(unique_middlewares)
+        return route
+
+class RouteList(RouteBuild):
+    def get(self, path: str, endpoint):
+        route = Route.get(path, endpoint)
+        self.routes.append(route)
+        return route
+    
+    def post(self, path: str, endpoint):
+        route = Route.post(path, endpoint)
+        self.routes.append(route)
+        return route
+
+    def put(self, path: str, endpoint: callable):
+        route = Route.put(path, endpoint)
+        self.routes.append(route)
+        return route
+
+    def delete(self, path: str, endpoint: callable):
+        route = Route.delete(path, endpoint)
+        self.routes.append(route)
+        return route
+    
+    def group(self, callback, prefix=""):
+        if isinstance(callback, str):
+            route: RouteList = self._handle_file_to_route(callback)
+            route.prefix = prefix
+            self.routes.append(route)
+            return route
+        elif isinstance(callback, list):
+            route = RouteList()
+            route.routes = callback
+            route.prefix = prefix
+            self.routes.append(route)
+            return route
+        return self
+    
+    def middleware(self, *middlewares):
+        self.middlewares.extend(middlewares)
+        return self
+
+class Router(RouteList):
+    pass
+    

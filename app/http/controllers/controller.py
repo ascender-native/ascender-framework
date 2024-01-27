@@ -14,7 +14,7 @@ class Controller():
         return await User.filter(username="asdasdas").all()
     
 class UserController:
-    async def index():
+    async def index(user: str):
         return {
-
+            "user": user
         }

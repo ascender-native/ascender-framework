@@ -1,5 +1,4 @@
 from core.support.service_provider import ServiceProvider
-from core.contracts.http.kernel import Kernel as KernelContract
 from core.routing.router import Route, RouteList, Router
 
 class RoutingServiceProvider(ServiceProvider):   

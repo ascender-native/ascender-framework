@@ -5,10 +5,11 @@ class HttpRoute:
     prefix: str = ""
     methods: list
 
-    def __init__(self, path: str, endpoint, methods: list, prefix: str = "") -> None:
+    def __init__(self, path: str, endpoint, methods: list, prefix: str = "", name = "") -> None:
         self.path = prefix + path
         self.enpoint = endpoint
         self.methods = methods
+        self._name = name
 
     def middleware(self, *middlewares):
         if isinstance(middlewares, tuple):
@@ -16,6 +17,10 @@ class HttpRoute:
         else:
             for middleware in middlewares:
                 self.middlewares.append(middleware)
+        return self
+    
+    def name(self, name):
+        self._name = name
         return self
     
 class Route:
@@ -135,6 +140,7 @@ class RouteList(RouteBuild):
     def middleware(self, *middlewares):
         self.middlewares.extend(middlewares)
         return self
+
 
 class Router(RouteList):
     pass

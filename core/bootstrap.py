@@ -1,6 +1,6 @@
 from core.contracts.foundation.application import Application as ApplicationContract
 from app.http.kernel import Kernel
-from core.contracts.http.kernel import Kernel as KernelContract
+from core.contracts.kernel import Kernel as KernelContract
 from core.main import app
 
 

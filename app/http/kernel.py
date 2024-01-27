@@ -8,7 +8,7 @@ class Kernel(HttpKernel):
     _app: any
     _router: any
     server: any
-    _routes: any
+    _routes: list = []
 
     __bootstrappers: dict = [
         load_environment.LoadEnvironment,
@@ -21,6 +21,7 @@ class Kernel(HttpKernel):
     def __init__(self, app: Application, router = None) -> None:
         self._app = app
         self._router = router
+        self._routes: list = []
         self.sync_middleware_to_router()
 
     def get_bootstrappers(self):

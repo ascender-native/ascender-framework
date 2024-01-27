@@ -2,21 +2,21 @@
 from app.http.controllers.controller import Controller, UserController
 from core.routing.router import HttpRoute, Route, RouteList
 from core.main import app
-from app.http.middleware.auth import SimpleMiddleware
+from app.http.middleware.auth import Authenticated
+
 
 route: RouteList = app.make(Route)
 
-# TODO: реализовать проверку get ключей
-route.get('/user/', UserController.index)
+route.get('/user/{user}', UserController.index).name('home')
 
 route.group(prefix="/group1/",  callback = [
-    Route.post(path="/1", endpoint=Controller.index),
-    Route.get(path="/2", endpoint=Controller.index),
+    Route.post(path="/1", endpoint=Controller.index).name('group1.1'),
+    Route.get(path="/1", endpoint=Controller.index).name('group1.2'),
 
     Route.group(prefix="/group2",  callback=[
-        Route.post(path="/3", endpoint=Controller.index),
+        Route.post(path="/3", endpoint=Controller.index).name('group2.group1.1'),
         Route.group(prefix="/group3",  callback=[
-            Route.post(path="/4", endpoint=Controller.index),
+            Route.post(path="/4", endpoint=Controller.index).name('group2.group2.2'),
         ])
-    ]).middleware(SimpleMiddleware)
-])
+    ])
+]).middleware(Authenticated)

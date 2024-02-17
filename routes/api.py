@@ -2,8 +2,7 @@
 from app.http.controllers.controller import Controller, UserController
 from core.routing.router import HttpRoute, Route, RouteList
 from core.main import app
-from app.http.middleware.auth import Authenticated
-
+from core.support.auth.middleware import JWTAuthentication
 
 route: RouteList = app.make(Route)
 
@@ -19,4 +18,4 @@ route.group(prefix="/group1/",  callback = [
             Route.post(path="/4", endpoint=Controller.index).name('group2.group2.2'),
         ])
     ])
-]).middleware(Authenticated)
+]).middleware(JWTAuthentication)

@@ -73,9 +73,9 @@ class ConsoleKernel():
             dir_path = directory[0]
             modules = self.get_modules(dir_path)
             for module in modules:
+                if "__init__" in module: continue
                 self.load(module, cmd_object_name)
             return
-
         mod = importlib.import_module(cmd_name)
         cmd_object = getattr(mod, cmd_object_name)
         if not isinstance(cmd_object, click.BaseCommand):

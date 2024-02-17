@@ -13,5 +13,14 @@
 Сначала клонируйте репозиторий на свой локальный компьютер:
 
 ```bash
+pip install -e .
+
+ascender serve # --reload --port 8000
+
+```
+or 
+```bash
 pip install -r requirements.txt
+
 uvicorn core.bootstrap:serve --reload --port 8000
+```

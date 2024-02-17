@@ -7,7 +7,9 @@ import itertools
 class DatabaseServiceProvider(ServiceProvider):
     async def boot(self):
         db: DatabaseManager = self.app.make('db')
-        await db.connection()
+        db_name = self.app.make('config').get('database', {}).get('default', '')
+        if db_name:
+            await db.connection(db_name)
 
     async def register(self):
         await self.register_connection_services()
@@ -15,7 +17,7 @@ class DatabaseServiceProvider(ServiceProvider):
 
     async def register_connection_services(self):
         self.app.singleton('db', DatabaseManager)
-        db: DatabaseManager = self.app.make('db')
+        self.app.make('db')
 
     async def register_models(self):
         config: dict = self.app.make("config")

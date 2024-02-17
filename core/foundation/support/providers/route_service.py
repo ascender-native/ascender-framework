@@ -4,6 +4,8 @@ from core.contracts.kernel import Kernel as KernelContract
 from fastapi import FastAPI, APIRouter, Depends
 from core.routing.router import HttpRoute, RouteList
 from core.foundation.application import Application
+from fastapi.responses import JSONResponse
+from fastapi.datastructures import Default
 
 class RouteServiceProvider(ServiceProvider):
     http_routes = []
@@ -34,7 +36,8 @@ class RouteServiceProvider(ServiceProvider):
                 methods=route.methods,
                 response_model_by_alias=True,
                 dependencies=[Depends(middleware) for middleware in route.middlewares],
-                name=route._name
+                name=route._name,
+                response_class=route.response_class if route.response_class else Default(JSONResponse)
                 )
         if self.server:
             self.server.include_router(api_router)

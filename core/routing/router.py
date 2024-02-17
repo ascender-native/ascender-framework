@@ -1,15 +1,21 @@
+from fastapi.responses import JSONResponse
+
 class HttpRoute:
     middlewares: list = []
     enpoint: callable
     path: str = ""
     prefix: str = ""
     methods: list
+    response_class=None
+    default_response_class=JSONResponse
 
-    def __init__(self, path: str, endpoint, methods: list, prefix: str = "", name = "") -> None:
+    def __init__(self, path: str, endpoint, methods: list, prefix: str = "", name = "", response_class=None, default_response_class=JSONResponse) -> None:
         self.path = prefix + path
         self.enpoint = endpoint
         self.methods = methods
         self._name = name
+        self.response_class=response_class
+        self.default_response_class=default_response_class
 
     def middleware(self, *middlewares):
         if isinstance(middlewares, tuple):
@@ -67,6 +73,8 @@ class RouteBuild:
         self.prefix: str = ""
         self.routes: list = []
         self.middlewares: list = []
+        self._response_class=None
+        self.default_response_class=JSONResponse
 
     def _handle_file_to_route(self, file_path):
         context = {"route": []}
@@ -85,11 +93,21 @@ class RouteBuild:
             self.build_prefix(route, group)
             self.build_middleware(route, group)
             if isinstance(route, HttpRoute):
-                route.prefix = self.prefix + route.prefix
+                self.build_config(route)
+
+                route.prefix = self.prefix + route.prefix                
                 http_routes.append(route)
             elif isinstance(route, RouteList):
                 http_routes = self.build_routes(route.routes, group=route, http_routes=http_routes)
         return http_routes
+    
+    def build_config(self, route: HttpRoute):
+        if not route.response_class:
+            route.response_class = self._response_class
+        if not route.default_response_class:
+            route.default_response_class = self.default_response_class
+        return route
+
     
     def build_prefix(self, route, group):
         if isinstance(group, RouteBuild):
@@ -97,9 +115,10 @@ class RouteBuild:
         return route
     
     def build_middleware(self, route: HttpRoute, group):
+        unique_middlewares = set(route.middlewares) | set(self.middlewares)
         if isinstance(group, RouteBuild):
-            unique_middlewares = set(route.middlewares) | set(group.middlewares)
-            route.middlewares = list(unique_middlewares)
+            unique_middlewares = unique_middlewares | set(group.middlewares)
+        route.middlewares = list(unique_middlewares)
         return route
 
 class RouteList(RouteBuild):
@@ -136,11 +155,27 @@ class RouteList(RouteBuild):
             self.routes.append(route)
             return route
         return self
+
+    def response_class(self, response_class):
+        self._response_class = response_class
+        return self
     
     def middleware(self, *middlewares):
+        middlewares = self.make_middlewares(middlewares)
         self.middlewares.extend(middlewares)
         return self
-
+    
+    def make_middlewares(self, middlewares):
+        from core.main import app
+        _middlewares = []
+        for middleware in middlewares:
+            if isinstance(middleware, str):
+                middleware = app.make(f"middlewares.{middleware}")
+            else:
+                middleware = app.make(middleware, default=middleware)
+                middleware = app.build(middleware.handle)
+            _middlewares.append(middleware)
+        return _middlewares
 
 class Router(RouteList):
     pass

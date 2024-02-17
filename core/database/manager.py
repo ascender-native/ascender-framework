@@ -24,8 +24,14 @@ class DatabaseManager():
     def refresh_connections(self, name):
         database, type = self._parse_connection_name(name)
         self._connections[name] = self.configure(
-            self.make_connection(database), type)
+            self.make_connection(database), self.get_db_name(name))
         return self._connections[name]
+    
+    @staticmethod
+    def get_db_name(name):
+        match name:
+            case 'pgsql': return 'postgres'
+        return name
     
     def make_connection(self, name):
         config = self.configuration(name)
@@ -45,17 +51,22 @@ class DatabaseManager():
     async def connection(self, name: str = None):
         database, type = self._parse_connection_name(name)
         name = name or database
-
         if not name in self._connections:
             self._connections[name] = await self.configure(
-                self.make_connection(database), type)
+                self.make_connection(database), self.get_db_name(name))
         return self._connections[name]
     
-    async def configure(self, connecton, type):
-        obj = await Tortoise.init(
-            db_url='postgres://{username}:{password}@{host}:{port}/{database}'.format(**connecton),
-            modules={'models': self._models}
-        )
+    async def configure(self, connecton, db_type: str):
+        if (db_type == "sqlite"):
+            obj = await Tortoise.init(
+                db_url=db_type+'://{url}'.format(**connecton),
+                modules={'models': self._models}
+            )
+        else:
+            obj = await Tortoise.init(
+                db_url=db_type+'://{username}:{password}@{host}:{port}/{database}'.format(**connecton),
+                modules={'models': self._models}
+            )
         await Tortoise.generate_schemas()
         return obj
 

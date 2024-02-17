@@ -42,18 +42,22 @@ class Container:
             return concrete
         return closure()
 
-    def make(self, abstract, *params):
-        return self.resolve(abstract, params)
+    def make(self, abstract, *params, default=None):
+        return self.resolve(abstract, params, default)
     
-    def resolve(self, abstract, params = None):
+    def resolve(self, abstract, params=None, default=None):
         concrete = self.get_concrete(abstract)
-        if not self.is_shared(abstract):
-            return self.build(concrete, params)
-        if abstract not in self.instances:
-            self.instances[abstract] = self.build(concrete, params)
-            return self.instances[abstract]
+        if isinstance(concrete, str): return default
         
-        _object = self.instances[abstract]
+        if not self.is_shared(abstract):
+            _object =  self.build(concrete, params)
+        elif abstract not in self.instances:
+            self.instances[abstract] = self.build(concrete, params)
+            _object =  self.instances[abstract]
+        elif abstract in self.instances:
+            _object = self.instances[abstract]
+        else:
+            _object = default
 
         return _object
     

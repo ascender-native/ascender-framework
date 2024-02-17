@@ -2,3 +2,4 @@
 .vscode
 __pycache__/
 ascender.egg-info/
+.venv

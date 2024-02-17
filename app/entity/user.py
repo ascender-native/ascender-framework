@@ -1,13 +1,19 @@
-from core.database.model import Model
-from tortoise.models import Model
-from tortoise import fields, Tortoise
+from .personal_access_token import PersonalAccessToken
+from tortoise import fields
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-class User(Model):
+import core.support.auth.model as auth_model
+
+class User(auth_model.User):
     id = fields.IntField(pk=True)
     username = fields.CharField(max_length=20, unique=True)
-    name = fields.CharField(max_length=50, null=True)
-    family_name = fields.CharField(max_length=50, null=True)
+    email = fields.CharField(max_length=50, unique=True)
+    password = fields.CharField(max_length=200)
+
+    tokens = fields.ReverseRelation['PersonalAccessToken']
+
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
 
     @staticmethod
     def form():

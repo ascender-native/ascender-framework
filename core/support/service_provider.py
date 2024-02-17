@@ -2,7 +2,6 @@ from abc import ABC
 from core.contracts.foundation.application import Application
 
 class ServiceProvider(ABC):
-
     app: Application
 
     _booting_callbacks: list = []
@@ -40,7 +39,7 @@ class DefaultServiceProviders():
         from core.database.providers.db_service import DatabaseServiceProvider
         
         self._providers = [
-            DatabaseServiceProvider
+            DatabaseServiceProvider,
         ]
 
     def get_providers(self) -> list:

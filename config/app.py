@@ -7,6 +7,7 @@ from app.providers.auth_service import AuthServiceProvider
 from core.foundation.support.providers.middleware_service import MiddlewareServiceProvider
 
 from core.support.auth.middleware import JWTAuthentication
+from ascis.ascis_provider import AscisProvider
 
 config = {
     "providers": ServiceProvider.default_list() + [
@@ -14,6 +15,7 @@ config = {
         AppServiceProvider,
         RouteServiceProvider,
         AuthServiceProvider,
+        AscisProvider,
     ],
 
     "middlewares": {

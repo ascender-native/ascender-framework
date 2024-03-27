@@ -5,7 +5,7 @@ class RouteServiceProvider(BaseRouteServiceProvider):
     def boot(self):
         router: Router = self.app.make(Router)
         self.routers(routers=[
-            router.group('routes/auth.py', prefix="/auth"),
-            router.group('routes/api.py', prefix="/api"),
-            router.group('routes/web.py', prefix="/web"),
+            router.group('routes/auth.py', prefix="/auth").tags('auth'),
+            router.group('routes/api.py', prefix="/api").tags('api'),
+            router.group('routes/web.py', prefix="/web").tags('web'),
         ])

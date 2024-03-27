@@ -2,6 +2,7 @@ from fastapi.responses import JSONResponse
 
 class HttpRoute:
     middlewares: list = []
+    _tags: list = []
     enpoint: callable
     path: str = ""
     prefix: str = ""
@@ -9,10 +10,21 @@ class HttpRoute:
     response_class=None
     default_response_class=JSONResponse
 
-    def __init__(self, path: str, endpoint, methods: list, prefix: str = "", name = "", response_class=None, default_response_class=JSONResponse) -> None:
+    def __init__(
+            self, 
+            path: str, 
+            endpoint, 
+            methods: list, 
+            prefix: str = "", 
+            name = "", 
+            tags: list = [],
+            response_class=None, 
+            default_response_class=JSONResponse
+        ) -> None:
         self.path = prefix + path
         self.enpoint = endpoint
         self.methods = methods
+        self._tags = []
         self._name = name
         self.response_class=response_class
         self.default_response_class=default_response_class
@@ -23,6 +35,10 @@ class HttpRoute:
         else:
             for middleware in middlewares:
                 self.middlewares.append(middleware)
+        return self
+
+    def tags(self, *tags):
+        self._tags.append(*tags)
         return self
     
     def name(self, name):
@@ -73,6 +89,7 @@ class RouteBuild:
         self.prefix: str = ""
         self.routes: list = []
         self.middlewares: list = []
+        self._tags: list = []
         self._response_class=None
         self.default_response_class=JSONResponse
 
@@ -92,6 +109,7 @@ class RouteBuild:
         for route in routes:
             self.build_prefix(route, group)
             self.build_middleware(route, group)
+            self.build_tags(route, group)
             if isinstance(route, HttpRoute):
                 self.build_config(route)
 
@@ -119,6 +137,13 @@ class RouteBuild:
         if isinstance(group, RouteBuild):
             unique_middlewares = unique_middlewares | set(group.middlewares)
         route.middlewares = list(unique_middlewares)
+        return route
+
+    def build_tags(self, route: HttpRoute, group):
+        unique_tags = set(route._tags) | set(self._tags)
+        if isinstance(group, RouteBuild):
+            unique_tags = unique_tags | set(group._tags)
+        route._tags = list(unique_tags)
         return route
 
 class RouteList(RouteBuild):
@@ -163,6 +188,10 @@ class RouteList(RouteBuild):
     def middleware(self, *middlewares):
         middlewares = self.make_middlewares(middlewares)
         self.middlewares.extend(middlewares)
+        return self
+    
+    def tags(self, *tags):
+        self._tags.extend(tags)
         return self
     
     def make_middlewares(self, middlewares):

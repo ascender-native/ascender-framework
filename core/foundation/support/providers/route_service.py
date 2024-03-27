@@ -31,6 +31,7 @@ class RouteServiceProvider(ServiceProvider):
             if not isinstance(route, HttpRoute): continue
             full_path = route.prefix + route.path
             api_router.add_api_route(
+                tags=route._tags,
                 path=full_path, 
                 endpoint=route.enpoint, 
                 methods=route.methods,

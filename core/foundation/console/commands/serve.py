@@ -2,6 +2,7 @@ import click
 import subprocess
 from core.main import cli
 from click.core import Context, Option
+from core.main import config
 
 def flag_with_value(ctx: Context, param: Option, value):
     param.name = param.opts[0]
@@ -10,6 +11,7 @@ def flag_with_value(ctx: Context, param: Option, value):
 @cli.command("serve")
 @click.option('--reload', is_flag=True)
 @click.option('--port', callback=flag_with_value)
+@click.option('--host', callback=flag_with_value)
 def serve(**args):
     flags = []
     params = []
@@ -20,5 +22,10 @@ def serve(**args):
         elif value != None:
             params.append(arg)
             params.append(value)
+
+    if '--host' not in params:
+        params += ['--host', config('app.host')]
+    if '--port' not in params:
+        params += ['--port', config('app.port')]
 
     subprocess.run(['uvicorn', 'core.bootstrap:serve']+flags+params)

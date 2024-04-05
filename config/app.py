@@ -8,6 +8,15 @@ from core.foundation.support.providers.middleware_service import MiddlewareServi
 
 from core.support.auth.middleware import JWTAuthentication
 
+import os
+
+if ":" in os.getenv("APP_URL"):
+    __host,__port = os.getenv("APP_URL").split(':')
+else:
+    __host = os.getenv("APP_URL")
+    __port = '8000'
+
+
 config = {
     "providers": ServiceProvider.default_list() + [
         MiddlewareServiceProvider,
@@ -18,5 +27,8 @@ config = {
 
     "middlewares": {
         'api:auth': JWTAuthentication
-    } 
+    },
+
+    "host": __host,
+    "port": __port
 }

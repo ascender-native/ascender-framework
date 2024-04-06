@@ -1,6 +1,5 @@
 from core.main import cli, config, app
 from core.support.service_provider import ServiceProvider
-from ascis.ascis_provider import AscisProvider
 
 import shutil
 import importlib

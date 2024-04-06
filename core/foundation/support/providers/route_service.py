@@ -21,8 +21,10 @@ class RouteServiceProvider(ServiceProvider):
 
     def routers(self, routers, prefix=""):        
         for router in routers:
-            if not isinstance(router, RouteList): continue
-            http_routes = router.build()
+            if isinstance(router, RouteList): 
+                http_routes = router.build()
+            if isinstance(router, HttpRoute):
+                http_routes = [router]
             self.register_routes(http_routes)
 
     def register_routes(self, routes) -> None:            

@@ -7,14 +7,15 @@ from app.providers.auth_service import AuthServiceProvider
 from core.foundation.support.providers.middleware_service import MiddlewareServiceProvider
 
 from core.support.auth.middleware import JWTAuthentication
-from ascis.ascis_provider import AscisProvider
+
+from ascaiogram.provider import TelegramBotProvider
 
 import os
 
 if ":" in os.getenv("APP_URL"):
     __host,__port = os.getenv("APP_URL").split(':')
 else:
-    __host = os.getenv("APP_URL")
+    __host = os.getenv("APP_URL", 'localhost')
     __port = '8000'
 
 
@@ -23,14 +24,16 @@ config = {
         MiddlewareServiceProvider,
         AppServiceProvider,
         RouteServiceProvider,
+        TelegramBotProvider,
         AuthServiceProvider,
-        AscisProvider,
     ],
 
     "middlewares": {
         'api:auth': JWTAuthentication
     },
 
+    "env": os.getenv("APP_ENV", 'local'),
+    "url": os.getenv("APP_URL", 'localhost:8000'),
     "host": __host,
     "port": __port
 }

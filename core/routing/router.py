@@ -93,6 +93,37 @@ class RouteBuild:
         self._response_class=None
         self.default_response_class=JSONResponse
 
+    def route(self, name) -> None|HttpRoute:
+        for route in self.build():
+            if route._name == name:
+                return route
+        return None
+    
+    def url(self, name, **params):
+        from core.main import config
+        # Retrieve the base URL from the configuration.
+        base_url: str = self.make_full_url(config('app.url'))
+        # Fetch the route object by name, assuming it exists.
+        route = self.route(name)
+
+        # Construct the full URL by combining the base URL and the route's path.
+        # We assume that the path includes placeholders for parameters.
+        try:
+            # If parameters are provided, format the URL using these parameters.
+            if params:
+                full_url = base_url + route.path.format(**params)
+            else:
+                full_url = base_url + route.path
+        except KeyError as e:
+            raise ValueError(f"Missing parameter in the URL formatting: {e}")
+
+        return full_url
+    
+    def make_full_url(self, host: str, scheme='http'):
+        if not host.startswith(('http://', 'https://')):
+            return f'{scheme}://{host}'
+        return host
+
     def _handle_file_to_route(self, file_path):
         context = {"route": []}
         with open(file_path, 'r') as file:

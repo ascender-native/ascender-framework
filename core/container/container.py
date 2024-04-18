@@ -24,7 +24,6 @@ class Container:
     def bind(self, abstract, concrete=None, shared=False):
         if concrete is None:
             concrete = abstract
-            
         if isinstance(concrete, str):
             concrete = self.get_closure(concrete)
 
@@ -47,8 +46,9 @@ class Container:
     
     def resolve(self, abstract, params=None, default=None):
         concrete = self.get_concrete(abstract)
-        if isinstance(concrete, str): return default
-        
+        if isinstance(concrete, str): 
+            return default
+
         if not self.is_shared(abstract):
             _object =  self.build(concrete, params)
         elif abstract not in self.instances:
@@ -84,12 +84,17 @@ class Container:
     def get_params(self, concrete, default = None):
         init_args = {}
         has_init = hasattr(concrete, '__init__')
-        if has_init and hasattr(concrete.__init__, '__annotations__'):
+        if inspect.isfunction(concrete):
+            init_args = inspect.signature(concrete).parameters
+        elif has_init and hasattr(concrete.__init__, '__annotations__'):
             init_args: dict = concrete.__init__.__annotations__
             init_args.pop('return', None)
 
         args = {}
         for name, abstract in init_args.items():
+            # abstract: inspect.Parameter = abstract
+            if isinstance(abstract, inspect.Parameter):
+                abstract = abstract.annotation
             if abstract in self.bindings:
                 args[name] = self.make(abstract)
             else:

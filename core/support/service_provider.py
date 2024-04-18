@@ -1,6 +1,5 @@
 from abc import ABC
 from core.contracts.foundation.application import Application
-import types
 
 class ServiceProvider(ABC):
     app: Application
@@ -54,21 +53,20 @@ class ServiceProvider(ABC):
             provider = provider.__name__
 
         paths = cls.paths_for_provider_or_group(provider, group)
-        if paths is not None:
+        if paths:
             return paths
-
-        return sum(cls.publishes.values(), [])
+        return []
 
     @classmethod
     def paths_for_provider_or_group(cls, provider=None, group=None):
         if provider and group:
-            return cls.paths_for_provider_and_group(provider, group)
-        elif group and group in cls.publish_groups:
-            return cls.publish_groups[group]
-        elif provider and provider in cls.publishes:
-            return cls.publishes[provider]
-        elif group or provider:
-            return []
+            result = cls.paths_for_provider_and_group(provider, group)
+            if result: 
+                return result
+            elif group and group in cls.publish_groups:
+                return cls.publish_groups[group]
+            elif provider and provider in cls.publishes:
+                return cls.publishes[provider]
 
     @classmethod
     def paths_for_provider_and_group(cls, provider, group):

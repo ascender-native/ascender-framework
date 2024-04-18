@@ -12,7 +12,7 @@ def config(path: str, default=None):
     config_dict: dict = app.make('config')
     keys = path.split('.')
     for key in keys:
-        config_dict = config_dict.get(key)
         if config_dict is None:
             return default
+        config_dict = config_dict.get(key)
     return config_dict

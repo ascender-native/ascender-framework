@@ -62,7 +62,24 @@ class ConsoleKernel():
             # self.cli.refresh_comand_loader()
         return self.cli
     
-    def load(self, cmd_name:str, cmd_object_name="cli"):
+    def load(self, cmd:str, cmd_object_name="cli"):
+        if isinstance(cmd, str):
+            cmd_object = self.load_str(cmd, cmd_object_name)
+        else:
+            mod = cmd
+            cmd_object = getattr(mod, cmd_object_name, None)
+            if cmd_object is None:
+                for attr_name in dir(mod):
+                    cmd_object = getattr(mod, attr_name)
+                    if not isinstance(cmd_object, click.BaseCommand):
+                        raise ValueError(
+                            f"Lazy loading of {cmd} failed by returning "
+                            "a non-command object"
+                        )
+        return cmd_object
+        
+    
+    def load_str(self, cmd_name:str, cmd_object_name: str):
         split_method = cmd_name.split(":", 1)
         if len(split_method) == 2:
             cmd_object_name = split_method[1]

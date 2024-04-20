@@ -2,7 +2,7 @@ from .personal_access_token import PersonalAccessToken
 from tortoise import fields
 from tortoise.contrib.pydantic import pydantic_model_creator
 
-import core.support.auth.model as auth_model
+import asccore.support.auth.model as auth_model
 
 class User(auth_model.User):
     id = fields.IntField(pk=True)

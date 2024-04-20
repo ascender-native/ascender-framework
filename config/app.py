@@ -1,14 +1,13 @@
-from core.support.service_provider import ServiceProvider
+from asccore.support.service_provider import ServiceProvider
+from asccore.foundation.support.providers.middleware_service import MiddlewareServiceProvider
+from asccore.support.auth.middleware import JWTAuthentication
 
 from app.providers.app_service import AppServiceProvider
 from app.providers.route_service import RouteServiceProvider
 from app.providers.route_service import RouteServiceProvider
 from app.providers.auth_service import AuthServiceProvider
-from core.foundation.support.providers.middleware_service import MiddlewareServiceProvider
 
-from core.support.auth.middleware import JWTAuthentication
-
-from ascaiogram.provider import TelegramBotProvider
+from app.providers.bot_service import TelegramBotProvider
 
 import os
 

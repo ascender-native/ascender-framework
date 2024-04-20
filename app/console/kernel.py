@@ -1,4 +1,4 @@
-from core.foundation.console.console_kernel import ConsoleKernel
+from asccore.foundation.console.console_kernel import ConsoleKernel
 import os
 
 class Kernel(ConsoleKernel):

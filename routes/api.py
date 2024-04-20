@@ -1,8 +1,8 @@
 
 from app.http.controllers.controller import Controller, UserController
-from core.routing.router import HttpRoute, Route, RouteList
-from core.main import app
-from core.support.auth.middleware import JWTAuthentication
+from asccore.routing.router import HttpRoute, Route, RouteList
+from asccore.main import app
+from asccore.support.auth.middleware import JWTAuthentication
 
 route: RouteList = app.make(Route)
 

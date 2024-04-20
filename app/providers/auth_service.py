@@ -1,5 +1,5 @@
-from core.support.auth.model import User
-from core.support.auth.service import AuthServiceProvider as AuthBaseServiceProvider, JWTAuthentication
+from asccore.support.auth.model import User
+from asccore.support.auth.service import AuthServiceProvider as AuthBaseServiceProvider, JWTAuthentication
 
 class AuthServiceProvider(AuthBaseServiceProvider):
     async def register(self):

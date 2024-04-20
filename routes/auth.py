@@ -1,6 +1,6 @@
-from core.support.auth.controller import AuthenticationController
-from core.routing.router import Route, RouteList
-from core.main import app
+from asccore.support.auth.controller import AuthenticationController
+from asccore.routing.router import Route, RouteList
+from asccore.main import app
 
 route: RouteList = app.make(Route)
 

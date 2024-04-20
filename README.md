@@ -22,5 +22,5 @@ or
 ```bash
 pip install -r requirements.txt
 
-uvicorn core.bootstrap:serve --reload --port 8000
+uvicorn bootstrap:serve --reload --port 8000
 ```

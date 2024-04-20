@@ -1,10 +1,23 @@
-from core.contracts.foundation.application import Application as ApplicationContract
+from asccore.contracts.foundation.application import Application as ApplicationContract
+from asccore.contracts.kernel import Kernel as KernelContract
+from asccore.main import app
 from app.console.kernel import Kernel
-from core.contracts.kernel import Kernel as KernelContract
-from core.main import app
- 
+
 def cli():
     app.singleton(ApplicationContract, lambda: app)
     app.singleton(KernelContract, Kernel)
-    kernel: Kernel = app.make(KernelContract)
+    kernel = app.make(KernelContract)
     kernel.handle()
+
+def serve():
+    from asccore.contracts.foundation.application import Application as ApplicationContract
+    from asccore.contracts.kernel import Kernel as KernelContract
+    from asccore.main import app
+    from app.http.kernel import Kernel
+
+    app.singleton(ApplicationContract, lambda: app)
+    app.singleton(KernelContract, Kernel)
+    kernel = app.make(KernelContract)
+    kernel.handle()
+
+    return kernel.send()

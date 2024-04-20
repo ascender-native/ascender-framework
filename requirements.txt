@@ -74,4 +74,7 @@ typing_extensions==4.9.0
 urllib3==2.2.0
 uvicorn==0.26.0
 yarl==1.9.4
+inflection===0.5.1
+
+asccore @ file:///home/drabbit/projects/ascender-native-1/core
 ascaiogram @ file:///home/drabbit/projects/ascender-native-1/packages/ascender_telegram

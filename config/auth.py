@@ -1,4 +1,3 @@
-from core.support.auth.config.auth import config
 import os
 
 config = {

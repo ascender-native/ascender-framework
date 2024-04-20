@@ -1,8 +1,8 @@
-from core.contracts.foundation.application import Application
+from asccore.contracts.foundation.application import Application
 from fastapi import FastAPI
-from core.foundation.bootstrap import load_configuration, load_environment, register_providers, boot_providers, connection_database
+from asccore.foundation.bootstrap import load_configuration, load_environment, register_providers, boot_providers, connection_database
 from contextlib import asynccontextmanager
-from core.foundation.http.http_kernel import HttpKernel
+from asccore.foundation.http.http_kernel import HttpKernel
 
 class Kernel(HttpKernel):
     _app: any

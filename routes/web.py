@@ -1,6 +1,6 @@
-from core.routing.router import Route
+from asccore.routing.router import Route
 from app.http.controllers.controller import Controller
-from core.main import app
+from asccore.main import app
 
 route: Route = app.make(Route)
 

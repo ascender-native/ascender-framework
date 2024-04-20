@@ -1,5 +1,5 @@
-from core.main import cli, config, app
-from core.support.service_provider import ServiceProvider
+from asccore.main import cli, config, app
+from asccore.support.service_provider import ServiceProvider
 
 import shutil
 import importlib
